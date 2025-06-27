@@ -27,8 +27,8 @@ const GROUP_PHRASES = [
 ];
 
 const MAP_URLS = {
-    "Ground Floor": "https://raw.githubusercontent.com/bgigurtsis/perfpath/main/Ground%20floor.png",
-    "1st Floor": "https://raw.githubusercontent.com/bgigurtsis/perfpath/main/1st%20floor.png"
+    "Ground Floor": "https://raw.githubusercontent.com/bgigurtsis/perfpath/main/images/Ground%20floor.png",
+    "1st Floor": "https://raw.githubusercontent.com/bgigurtsis/perfpath/main/images/1st%20floor.png"
 };
 
 const ROOM_COORDINATES = {
