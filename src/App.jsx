@@ -27,8 +27,8 @@ const GROUP_PHRASES = [
 ];
 
 const MAP_URLS = {
-    "Ground Floor": "https://raw.githubusercontent.com/bgigurtsis/perfpath/main/images/Ground%20floor.png",
-    "1st Floor": "https://raw.githubusercontent.com/bgigurtsis/perfpath/main/images/1st%20floor.png"
+    "Ground Floor": "https://raw.githubusercontent.com/bgigurtsis/perfpath/main/Ground%20floor.png",
+    "1st Floor": "https://raw.githubusercontent.com/bgigurtsis/perfpath/main/1st%20floor.png"
 };
 
 const ROOM_COORDINATES = {
@@ -103,16 +103,20 @@ const FlowchartPreview = ({ pathway, performerName, onReset, onSavePdf, isSaving
             {pathway.map((step, index) => (
                 <React.Fragment key={step.instanceKey || step.id || `step-${index}`}>
                     {step.type === 'group_phrase' ? (<div className="w-full max-w-md p-4 bg-purple-900/50 border-2 border-purple-500 rounded-lg shadow-lg text-center"><p className="font-bold text-purple-200">{step.action}</p></div>) : (
-                        <div className="group w-full max-w-2xl p-4 bg-blue-900/50 border-2 border-blue-500 rounded-lg shadow-lg text-left relative">
-                            <div className="absolute top-2 right-2 flex gap-1 sm:gap-2">
-                                <button onClick={() => onShowMap(step)} className="p-1.5 bg-gray-600 rounded-md hover:bg-green-500"><MapPinIcon className="w-4 h-4"/></button>
-                                <button onClick={() => onEdit(step)} className="p-1.5 bg-gray-600 rounded-md hover:bg-yellow-500"><EditIcon className="w-4 h-4"/></button>
-                                <button onClick={() => onDelete(step.id)} className="p-1.5 bg-gray-600 rounded-md hover:bg-rose-500"><TrashIcon className="w-4 h-4"/></button>
+                        <div className="group w-full max-w-2xl p-4 bg-blue-900/50 border-2 border-blue-500 rounded-lg shadow-lg text-left">
+                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
+                                <div className="flex-grow mb-3 sm:mb-0 sm:pr-4">
+                                   <p className="font-semibold text-blue-200"><span className="font-bold">Location:</span> {step.location} ({step.floor})</p>
+                                   <p className="mt-1 text-blue-200"><span className="font-bold">Action:</span> {step.action}</p>
+                                   {step.time && <p className="mt-1 text-blue-300 text-sm"><span className="font-bold">Time:</span> {step.time}</p>}
+                                   {step.notes && <p className="mt-2 text-blue-300 text-sm italic border-l-2 border-blue-400 pl-2"><span className="font-bold not-italic">Notes:</span> {step.notes}</p>}
+                                </div>
+                                <div className="flex-shrink-0 flex gap-2 self-start sm:self-center">
+                                    <button onClick={() => onShowMap(step)} className="p-1.5 bg-gray-600 rounded-md hover:bg-green-500"><MapPinIcon className="w-5 h-5"/></button>
+                                    <button onClick={() => onEdit(step)} className="p-1.5 bg-gray-600 rounded-md hover:bg-yellow-500"><EditIcon className="w-5 h-5"/></button>
+                                    <button onClick={() => onDelete(step.id)} className="p-1.5 bg-gray-600 rounded-md hover:bg-rose-500"><TrashIcon className="w-5 h-5"/></button>
+                                </div>
                             </div>
-                           <p className="font-semibold text-blue-200 pr-24"><span className="font-bold">Location:</span> {step.location} ({step.floor})</p>
-                           <p className="mt-1 text-blue-200"><span className="font-bold">Action:</span> {step.action}</p>
-                           {step.time && <p className="mt-1 text-blue-300 text-sm"><span className="font-bold">Time:</span> {step.time}</p>}
-                           {step.notes && <p className="mt-2 text-blue-300 text-sm italic border-l-2 border-blue-400 pl-2"><span className="font-bold not-italic">Notes:</span> {step.notes}</p>}
                         </div>
                     )}
                     {index < pathway.length - 1 && <div className="my-2 text-gray-500"><ArrowDownIcon /></div>}
@@ -188,8 +192,15 @@ const MapModal = ({ step, onClose }) => {
                         <button onClick={onClose} className="p-1.5 bg-white text-black rounded-full shadow-lg"><CloseIcon className="w-5 h-5"/></button>
                      </div>
                 </div>
-                <div ref={imageContainerRef} className="relative overflow-hidden cursor-grab" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
-                    <div style={{ transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`, transition: 'transform 0.05s' }}>
+                <div 
+                    ref={imageContainerRef} 
+                    className="relative overflow-hidden cursor-grab" 
+                    style={{ touchAction: 'none' }}
+                    onTouchStart={handleTouchStart} 
+                    onTouchMove={handleTouchMove} 
+                    onTouchEnd={handleTouchEnd}
+                >
+                    <div style={{ transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`, transition: isInteracting.current ? 'none' : 'transform 0.1s' }}>
                         <img src={mapUrl} alt={`${floor} map`} className="w-full h-auto rounded-md" crossOrigin="anonymous" />
                         {highlightCoords && <div className="absolute bg-blue-500/50 border-2 border-blue-300 rounded-md" style={{...highlightCoords, pointerEvents: 'none'}}></div>}
                     </div>
@@ -223,7 +234,7 @@ export default function App() {
       setIsSaving(true);
       const { jsPDF } = window.jspdf;
       
-      const buttons = element.querySelectorAll('.group .absolute');
+      const buttons = element.querySelectorAll('.group .absolute, .sm\\:self-center');
       buttons.forEach(b => b.style.visibility = 'hidden');
       
       window.html2canvas(element, { scale: 2, backgroundColor: '#111827', useCORS: true })
